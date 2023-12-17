@@ -6,7 +6,7 @@ const router = express.Router()
 
 const contactAddChema=joi.object({
   name:joi.string().required(),
-  email:joi.string(),
+  email:joi.string().required(),
   phone:joi.string().required()
 })
 const contactPutChema=joi.object({
@@ -55,7 +55,7 @@ router.delete('/:contactId', async (req, res, next) => {
     if (!result) {
       throw HttpError(404, `contact with id=${id} not found`)
     }
-    res.json(result )
+    res.json({message:"contact deleted"} )
   } catch (error) {
     next(error)
   }
