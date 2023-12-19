@@ -4,11 +4,18 @@ import * as contactsFunctions from "../../models/contacts.js";
 import HttpError from "../../helpers/errors.js";
 const router = express.Router()
 
-const contactAddChema=joi.object({
-  name:joi.string().required(),
-  email:joi.string().required(),
-  phone:joi.string().required()
-})
+const contactAddChema = joi.object({
+  name: joi.string().required().messages({
+    'any.required': 'missed required name field',
+  }),
+  email: joi.string().required().messages({
+    'any.required': 'missed required email field',
+  }),
+  phone: joi.string().required().messages({
+    'any.required': 'missed required phone field',
+  }),
+});
+
 const contactPutChema=joi.object({
   name:joi.string(),
   email:joi.string(),
@@ -17,8 +24,8 @@ const contactPutChema=joi.object({
 
 
 router.get('/', async (req, res, next) => { 
-  // res.json({ message: 'template message all  ' })
   const result= await contactsFunctions.listContacts();
+  console.log(result)
   res.json(result)
 })
 
@@ -27,7 +34,7 @@ router.get('/:contactId', async (req, res, next) => {
     const id=req.params.contactId
     const result=await contactsFunctions.getContactById(id);
     if (!result) {
-      throw HttpError(404, `contact with id=${id} not found`)
+      throw HttpError(404, 'Not found');
     }
     return res.json(result)
   }catch(error){
@@ -38,6 +45,7 @@ router.get('/:contactId', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     const {error}= contactAddChema.validate(req.body)
+console.log(error)
   if (error) {
     throw HttpError(400,error.message)
   }
@@ -53,7 +61,7 @@ router.delete('/:contactId', async (req, res, next) => {
     const id=req.params.contactId
     const result=await contactsFunctions.removeContact(id);
     if (!result) {
-      throw HttpError(404, `contact with id=${id} not found`)
+      throw HttpError(404, `Not found`)
     }
     res.json({message:"contact deleted"} )
   } catch (error) {
@@ -63,18 +71,27 @@ router.delete('/:contactId', async (req, res, next) => {
 
 router.put('/:contactId', async (req, res, next) => {
   try {
-    const id=req.params.contactId
+    const id=req.params.contactId;
+    if (Object.keys(req.body).length === 0) {
+      
+      // Возвращаем ошибку или отправляем сообщение, в зависимости от требований
+      throw HttpError(400, 'Missing fields');
+    }
     const {error}= contactPutChema.validate(req.body)
+    
   if (error) {
     throw HttpError(400,error.message)
   }
   const result=await contactsFunctions.updateContactById(id,req.body)
-   res.json(result)
-  } catch (error) {
-    next(error)
-  }
-  
+  if (!result) {
+    throw HttpError(404, `Not found`)
+  } 
   res.json(result)
+  } catch (error) {
+    next(error) 
+  }
+   
+  
 })
 
 // module.exports = router
