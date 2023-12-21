@@ -50,7 +50,7 @@ console.log(error)
     throw HttpError(400,error.message)
   }
   const result=await contactsFunctions.addContact(req.body)
-   res.json(result)
+   res.status(201).json(result)
   } catch (error) {
     next(error)
   }
