@@ -14,6 +14,7 @@ const contactAddChema = joi.object({
   phone: joi.string().required().messages({
     'any.required': 'missed required phone field',
   }),
+  favorite:joi.boolean(),
 });
 
 const contactPutChema=joi.object({
@@ -21,7 +22,10 @@ const contactPutChema=joi.object({
   email:joi.string(),
   phone:joi.string()
 })
-
+const contactFavoriteChema=joi.object({
+  favorite: joi.boolean().required()
+})
+// ==========================================================
 
 router.get('/', async (req, res, next) => { 
   const result= await contactsFunctions.listContacts();
@@ -41,6 +45,7 @@ router.get('/:contactId', async (req, res, next) => {
     next(error);
   }
 })
+
 
 router.post('/', async (req, res, next) => {
   try {
@@ -90,9 +95,32 @@ router.put('/:contactId', async (req, res, next) => {
   } catch (error) {
     next(error) 
   }
-   
-  
 })
+
+router.patch('/:contactId/favorite', async (req, res, next) => {
+  try {
+   
+    const id=req.params.contactId;
+    if (Object.keys(req.body).length === 0) {
+      
+      // Возвращаем ошибку или отправляем сообщение, в зависимости от требований
+      throw HttpError(400, 'Missing fields');
+    }
+    const {error}= contactFavoriteChema.validate(req.body)
+    
+  if (error) {
+    throw HttpError(400,error.message)
+  }
+  const result=await contactsFunctions.updateContactById(id,req.body)
+  if (!result) {
+    throw HttpError(404, `Not found`)
+  } 
+  res.json(result)
+  } catch (error) {
+    next(error) 
+  }
+})
+
 
 // module.exports = router
 export default router;
