@@ -7,7 +7,7 @@ export const isValidId =(req,res,next)=>{
     console.log("middle-",contactId);
 
     if (!isValidObjectId(contactId)) {
-        return next(HttpError(404,`${contactId} not valid id` ))
+        return next(HttpError(404,`Not found` ))
     }
     next();
 }
