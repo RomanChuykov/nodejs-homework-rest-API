@@ -2,6 +2,7 @@ import express from'express';
 import joi from "joi";
 import * as contactsFunctions from "../../models/contacts.js";
 import HttpError from "../../helpers/errors.js";
+import { isValidId } from '../../helpers/middlewares.js';
 const router = express.Router()
 
 const contactAddChema = joi.object({
@@ -25,6 +26,8 @@ const contactPutChema=joi.object({
 const contactFavoriteChema=joi.object({
   favorite: joi.boolean().required()
 })
+
+router.param('contactId', isValidId);
 // ==========================================================
 
 router.get('/', async (req, res, next) => { 
@@ -104,7 +107,7 @@ router.patch('/:contactId/favorite', async (req, res, next) => {
     if (Object.keys(req.body).length === 0) {
       
       // Возвращаем ошибку или отправляем сообщение, в зависимости от требований
-      throw HttpError(400, 'Missing fields');
+      throw HttpError(400, 'Missing field favorite');
     }
     const {error}= contactFavoriteChema.validate(req.body)
     
