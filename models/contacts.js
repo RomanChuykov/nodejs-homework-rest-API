@@ -1,10 +1,8 @@
-// const fs = require('fs/promises')
+import fs from "fs/promises";
+import path from "path";
+import { nanoid } from "nanoid";
+import contact from "../models/mongo.js";
 
-<<<<<<< Updated upstream
-const listContacts = async () => {}
-
-const getContactById = async (contactId) => {}
-=======
 const contactsPath=path.resolve("models","contacts.json");
 // const updateContacts = contacts => fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
 //  TODO: задокументувати кожну функцію
@@ -16,23 +14,14 @@ async function listContacts(req,res) {
     const{id:owner}=req.user;
     const data = await contact.find({owner});
     return data;
->>>>>>> Stashed changes
 
-const removeContact = async (contactId) => {}
-
-const addContact = async (body) => {}
-
-const updateContact = async (contactId, body) => {}
-
-module.exports = {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContact,
+  } catch (error) {
+    return{
+      message:error.message
+    }
+    
+  }
 }
-<<<<<<< Updated upstream
-=======
  
   async function  getContactById(contactId) {
     // ...твій код. Повертає об'єкт контакту з таким id. Повертає null, якщо контакт з таким id не знайдений.
@@ -94,4 +83,3 @@ module.exports = {
   //   addContact:addContact,
   //   removeContact:removeContact
   // };
->>>>>>> Stashed changes
