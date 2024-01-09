@@ -22,11 +22,14 @@ async function listContacts(req,res) {
     
   }
 }
- 
-  async function  getContactById(contactId) {
+
+ async function  getContactById(req,res) {
     // ...твій код. Повертає об'єкт контакту з таким id. Повертає null, якщо контакт з таким id не знайдений.
     try {
-      const result= await contact.findById(contactId);
+      const { contactId } = req.params;
+      const { _id: owner } = req.user;
+      // const result= await contact.findById({_id});
+      const result = await contact.findOne({ _id: contactId,owner});
       return result ||null;
       
     } catch (error) {
@@ -35,10 +38,12 @@ async function listContacts(req,res) {
    
   }
 
-   async function removeContact(contactId) {
+   async function removeContact(req,res) {
     // ...твій код. Повертає об'єкт видаленого контакту. Повертає null, якщо контакт з таким id не знайдений.
     try {
-      const result= await contact.findByIdAndDelete(contactId)
+      const { contactId } = req.params;
+      const { _id: owner } = req.user;
+      const result= await contact.findByIdAndDelete({ _id: contactId,owner})
     
       if (!result) {
         return null;
@@ -59,11 +64,16 @@ async function listContacts(req,res) {
       return result 
   }
 
-  async function updateContactById(id,data){
+  async function updateContactById(req,res){
    try {
-     const result= await contact.findByIdAndUpdate(id,data,{new:true})
-   
-     if (!result) {
+    const { contactId } = req.params;
+    const { _id: owner } = req.user;
+    console.log(contactId,owner)
+    // const result= await contact.findByIdAndUpdate(id,data,{new:true})
+    // const result = await contact.findOneAndUpdate({contactId, owner}, req.body);
+    const result = await contact.findOneAndUpdate({ _id: contactId, owner }, req.body, { new: true }); 
+    console.log(result)
+    if (!result) {
        return null;
      }
      return result;

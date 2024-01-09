@@ -5,10 +5,7 @@ import { User }  from "../models/User.js";
 // const { JWT_SECRET } = process.env; 
 
 export const isValidId =(req,res,next)=>{
-    const {contactId}=req.params;
-    console.log(req.params)
-    console.log("middle-",contactId);
-    
+    const {contactId}=req.params;  
     if (!isValidObjectId(contactId)) {
         return next(HttpError(404,`Not found` ))
     }

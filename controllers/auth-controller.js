@@ -48,7 +48,7 @@ const signin=async(req,res,next)=>{
     const { password: _, ...userWithoutPassword } = userDetails;
     await User.findByIdAndUpdate(id, {token});
     res.json({
-    token: token,
+    // token: token,
     user: userWithoutPassword,
 });
    
