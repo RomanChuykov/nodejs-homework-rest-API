@@ -25,7 +25,7 @@ UserSchema.post("save", handleSaveError)
 export const userSignupSchema= Joi.object({
    password: Joi.string().required(),
    email: Joi.string().required(),
-   subscription:Joi.string().valid(...subscriptionlist).required(), 
+   subscription:Joi.string().valid(...subscriptionlist), 
 });
 export const userSigninSchema= Joi.object({
     password: Joi.string().required(),

@@ -38,12 +38,10 @@ async function listContacts(req,res) {
    
   }
 
-   async function removeContact(req,res) {
+  async function removeContact(contactId) {
     // ...твій код. Повертає об'єкт видаленого контакту. Повертає null, якщо контакт з таким id не знайдений.
     try {
-      const { contactId } = req.params;
-      const { _id: owner } = req.user;
-      const result= await contact.findByIdAndDelete({ _id: contactId,owner})
+      const result= await contact.findByIdAndDelete(contactId)
     
       if (!result) {
         return null;

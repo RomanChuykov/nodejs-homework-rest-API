@@ -27,7 +27,7 @@ import jwt from  "jsonwebtoken";
 }
 
 const signin=async(req,res,next)=>{
-    console.log(req.body)
+
     const {email,password}=req.body;
     const user=await User.findOne({email});
     if (!user) {
@@ -41,17 +41,16 @@ const signin=async(req,res,next)=>{
     const payload={
         id
     }
-
+    console.log("payload",payload)
     const token=jwt.sign(payload, process.env.JWT_SECRET, {expiresIn:"24h"});
    
     const { _id,  createdAt, updatedAt, ...userDetails } = user._doc;
-    const { password: _, ...userWithoutPassword } = userDetails;
+    const { password: _,token: __, ...userWithoutPassword } = userDetails;
     await User.findByIdAndUpdate(id, {token});
     res.json({
-    // token: token,
+    token: token,
     user: userWithoutPassword,
-});
-   
+});   
 }
 
 const getCurrent=async(req,res)=>{
