@@ -42,7 +42,7 @@ async function listContacts(req,res) {
     // ...твій код. Повертає об'єкт видаленого контакту. Повертає null, якщо контакт з таким id не знайдений.
     try {
       const result= await contact.findByIdAndDelete(contactId)
-    
+      
       if (!result) {
         return null;
       }

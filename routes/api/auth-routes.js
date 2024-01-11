@@ -18,6 +18,8 @@ export default authRouter;
         "password":"123456",
         "subscription":"pro"
 }
+http://localhost:3000/users/login
+http://localhost:3000/api/contacts
 {
         "name":"roman12",
         "email":"12345@qw.wq",
