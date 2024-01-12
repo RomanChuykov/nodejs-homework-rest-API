@@ -38,7 +38,27 @@ async function listContacts(req,res) {
    
   }
 
-  async function removeContact(contactId) {
+  async function removeContact(req,res) {
+    // ...твій код. Повертає об'єкт видаленого контакту. Повертає null, якщо контакт з таким id не знайдений.
+    try {
+      const { contactId } = req.params;
+      const { _id: owner } = req.user;
+      // const result= await contact.findByIdAndDelete({ _id: contactId,owner})
+      // const result = await contact.findByIdAndDelete(contactId, { owner });
+      const result = await contact.deleteOne({ _id: contactId, owner });
+
+      if (!result) {
+        return null;
+      }
+      return result;
+     
+    } catch (error) {
+     return null;
+    }
+  }
+
+
+  /*async function removeContact(contactId) {
     // ...твій код. Повертає об'єкт видаленого контакту. Повертає null, якщо контакт з таким id не знайдений.
     try {
       const result= await contact.findByIdAndDelete(contactId)
@@ -51,7 +71,7 @@ async function listContacts(req,res) {
     } catch (error) {
      return null;
     }
-  }
+  }*/
   
   async function addContact(object) {
     // ...твій код. Повертає об'єкт доданого контакту.
