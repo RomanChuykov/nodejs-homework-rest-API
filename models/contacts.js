@@ -43,8 +43,7 @@ async function listContacts(req,res) {
     try {
       const { contactId } = req.params;
       const { _id: owner } = req.user;
-      const result= await contact.findByIdAndDelete({ _id: contactId,owner})
-      
+      const result = await Contact.findOneAndDelete({_id: contactId, owner});
 
       if (!result) {
         return null;
