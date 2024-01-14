@@ -1,17 +1,19 @@
 import fs from "fs/promises";
 import path from "path";
 import { nanoid } from "nanoid";
+import contact from "../models/mongo.js";
 
 const contactsPath=path.resolve("models","contacts.json");
-const updateContacts = contacts => fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-// TODO: задокументувати кожну функцію
+// const updateContacts = contacts => fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+//  TODO: задокументувати кожну функцію
 
   
 // }
-async function listContacts() {
+async function listContacts(req,res) {
   try {
-    const data = await fs.readFile(contactsPath, 'utf-8');
-    return JSON.parse(data);
+    const{id:owner}=req.user;
+    const data = await contact.find({owner});
+    return data;
 
   } catch (error) {
     return{
@@ -20,48 +22,81 @@ async function listContacts() {
     
   }
 }
-  
-  async function  getContactById(contactId) {
+
+ async function  getContactById(req,res) {
     // ...твій код. Повертає об'єкт контакту з таким id. Повертає null, якщо контакт з таким id не знайдений.
-    const allContacts= await listContacts();
-    const result= allContacts.find(item=>item.id===contactId);
-    return result ||null;
+    try {
+      const { contactId } = req.params;
+      const { _id: owner } = req.user;
+      // const result= await contact.findById({_id});
+      const result = await contact.findOne({ _id: contactId,owner});
+      return result ||null;
+      
+    } catch (error) {
+      return null
+    }
    
   }
-   async function removeContact(contactId) {
+
+  async function removeContact(req,res) {
     // ...твій код. Повертає об'єкт видаленого контакту. Повертає null, якщо контакт з таким id не знайдений.
-    const allContacts= await listContacts();
-    const index=allContacts.findIndex(item=>item.id===contactId)
-    if (index===-1) {
-      return null;
+    try {
+      const { contactId } = req.params;
+      const { _id: owner } = req.user;
+      const result = await Contact.findOneAndDelete({_id: contactId, owner});
+
+      if (!result) {
+        return null;
+      }
+      return result;
+     
+    } catch (error) {
+     return null;
     }
-    const result=allContacts.splice(index,1);
-    await updateContacts(allContacts);
-    return result[0];
   }
+
+
+  /*async function removeContact(contactId) {
+    // ...твій код. Повертає об'єкт видаленого контакту. Повертає null, якщо контакт з таким id не знайдений.
+    try {
+      const result= await contact.findByIdAndDelete(contactId)
+      
+      if (!result) {
+        return null;
+      }
+      return result;
+     
+    } catch (error) {
+     return null;
+    }
+  }*/
   
   async function addContact(object) {
-    // ...твій код. Повертає об'єкт доданого контакту. 
-    const allContacts= await listContacts();
-    const newContact={
-      id:nanoid(),
-      name:object.name,
-      email:object.email,
-      phone:object.phone
-    };
-    allContacts.push(newContact);
-    await updateContacts(allContacts);    
-    return newContact
-
+    // ...твій код. Повертає об'єкт доданого контакту.
+    const {id:owner}=object.user
+ 
+      const result= await contact.create({...object.body,owner});
+      console.log(result)  
+      return result 
   }
 
-  async function updateContactById(id,data){
-    const allContacts= await listContacts();
-    const index=allContacts.findIndex(item=> item.id==id)
-    if (index===-1){ return null}
-    allContacts[index]={...allContacts[index],...data}
-    await updateContacts(allContacts);
-    return allContacts[index]
+  async function updateContactById(req,res){
+   try {
+    const { contactId } = req.params;
+    const { _id: owner } = req.user;
+    console.log(contactId,owner)
+    // const result= await contact.findByIdAndUpdate(id,data,{new:true})
+    // const result = await contact.findOneAndUpdate({contactId, owner}, req.body);
+    const result = await contact.findOneAndUpdate({ _id: contactId, owner }, req.body, { new: true }); 
+    console.log(result)
+    if (!result) {
+       return null;
+     }
+     return result;
+    
+   } catch (error) {
+    return null;
+   }
 
   }
   /*module.exports = {
