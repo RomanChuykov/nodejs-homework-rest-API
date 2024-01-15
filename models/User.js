@@ -13,7 +13,7 @@ const UserSchema=new Schema({
         type: String,
         required: [true, 'Email is required'],
         unique: true,
-    },
+    }, 
     subscription: {
         type: String,
         enum: subscriptionlist,

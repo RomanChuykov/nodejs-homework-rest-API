@@ -4,14 +4,20 @@ import { isEmptyBody ,autenticate} from "../../helpers/middlewares.js";
 import { userSignupSchema ,userSigninSchema} from "../../models/User.js";
 import { validateBody } from "../../helpers/middlewares.js";
 import authController from "../../controllers/auth-controller.js";
+import  upload  from "../../helpers/upload.js";
+
 export const authRouter=express.Router();
 
-authRouter.post("/register",isEmptyBody, validateBody(userSignupSchema),authController.signup);
+authRouter.post("/register",upload.single("avatar"),isEmptyBody, validateBody(userSignupSchema),authController.signup);
+// authRouter.post("/register",isEmptyBody, validateBody(userSignupSchema),authController.signup);
+
 authRouter.post("/login",isEmptyBody, validateBody(userSigninSchema),authController.signin)
 authRouter.get("/current",autenticate,authController.getCurrent);
 authRouter.post("/logout",autenticate,authController.logout)
+authRouter.post("/avatar",upload.single("avatar"),autenticate,authController.updateAvatar)
+
 export default authRouter;
-/*\
+/*\ 
 
 {
         "email":"asdq",
