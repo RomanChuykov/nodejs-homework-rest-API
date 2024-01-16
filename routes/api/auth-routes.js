@@ -14,7 +14,7 @@ authRouter.post("/register",upload.single("avatar"),isEmptyBody, validateBody(us
 authRouter.post("/login",isEmptyBody, validateBody(userSigninSchema),authController.signin)
 authRouter.get("/current",autenticate,authController.getCurrent);
 authRouter.post("/logout",autenticate,authController.logout)
-authRouter.post("/avatar",upload.single("avatar"),autenticate,authController.updateAvatar)
+authRouter.patch("/avatars",upload.single("avatar"),autenticate,authController.updateAvatar)
 
 export default authRouter;
 /*\ 
