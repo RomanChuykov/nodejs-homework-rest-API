@@ -7,7 +7,7 @@ import fs from "fs/promises";
 import path from "path";
 import gravatar from "gravatar";
 import Jimp from "jimp";
- 
+import { resolution } from "../helpers/middlewares.js";
 const avatarPath=path.resolve("public", "avatars");
 // const { JWT_SECRET } = process.env;. 
 // const JWT_SECRET1 = process.env.JWT_SECRET;
@@ -27,9 +27,12 @@ const signup=async(req,res,next)=>{
         let avatar = `https://www.gravatar.com/avatar/${email}?s=${100}`;
         if (req.file) {
             const {path:oldPath,filename}=req.file;
-            const newPath=path.join(avatarPath,filename) 
+            const newPath=path.join(avatarPath,filename)
+//  console.log("newPath",newPath);
+//  console.log("oldpath",oldPath)            
             await fs.rename(oldPath,newPath);
-             avatar=path.join("avatars",filename); 
+            resolution(newPath);
+             avatar=newPath//path.join("avatarPath",filename); 
         }
 //  console.log(avatar)
     const newUser=await User.create({...req.body,avatar,password:hashPass});
@@ -41,7 +44,7 @@ const signup=async(req,res,next)=>{
             avatar: newUser.avatar, 
         },
     })
-}
+} 
 
 const signin=async(req,res,next)=>{
 
@@ -84,32 +87,34 @@ const logout=async(req,res)=>{
     res.status(204).json()
 }
 
+
+
+
 const updateAvatar = async (req, res) => {
     if (!req.file) {
 		throw HttpError(400,"file not found");
 	}
     const { token } = req.user;
-	let avatar = req.user.avatar;
+	const oldAvatarPath =req.user.avatar;
 // console.log("req.file",req.file)
 	
         const { path: oldPath, filename } = req.file;
 		const newPath = path.join(avatarPath, filename);
-// console.log("oldpath",oldPath);
-// console.log("newpath",newPath);
-        // await fs.rename(oldPath, newPath);
-		avatar = path.join("avatars", filename);
+console.log("oldpath",oldPath);
+console.log("newpath",newPath);
+        await fs.rename(oldPath, newPath);
+		const avatar = newPath//path.join("avatarPath", filename);
 //********************* */
-Jimp.read(oldPath, (err, image) => {
-    if (err) throw err;
-    image.resize(250, 250);
-
-    image.write(newPath, (err) => {
-      if (err) throw err;
-     
-    });
-  });
+resolution(newPath)
 // **************************
-    
+console.log("oldavatar",oldAvatarPath)
+fs.unlink(oldAvatarPath, (err) => { 
+    if (err) {
+       console.error(`Помилка видалення файлу: ${err}`);
+   } else {
+       console.log(`Файл ${filePath} успішно видалено`);
+}
+});
 // console.log("avatar",avatar);
 
 	const result = await User.findOneAndUpdate({ token }, { avatar }, { new: true });
@@ -118,7 +123,6 @@ Jimp.read(oldPath, (err, image) => {
 	}
 	if (req.user.avatar) {
 		const oldAvatarPath = path.join(path.resolve("public", req.user.avatar));
-		await fs.unlink(oldAvatarPath);
 	}
 
 	res.json({

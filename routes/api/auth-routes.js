@@ -20,7 +20,7 @@ export default authRouter;
 /*\ 
 
 {
-        "email":"asdq",
+        "email":"roma3@qw.qw",
         "password":"123456",
         "subscription":"pro"
 }

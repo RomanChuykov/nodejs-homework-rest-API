@@ -2,7 +2,7 @@ import { isValidObjectId } from "mongoose";
 import{HttpError} from "./errors.js";
 import jwt from  "jsonwebtoken";
 import { User }  from "../models/User.js";
-
+import Jimp from "jimp";
 // const { JWT_SECRET } = process.env; 
 
 export const isValidId =(req,res,next)=>{
@@ -70,4 +70,26 @@ export const autenticate=async(req,res,next)=>{
     } catch (error) {
         next(HttpError(401,error.message));
     }
+}
+
+
+export const resolution=(path)=>{
+    Jimp.read(path, (err, image) => {
+        if (err) throw err;
+        image.resize(250, 250);
+        image.write(path, (err) => {
+            if (err) throw err;
+        });
+        // console.log("oldavapath",oldAvatarPath);
+    
+    
+     /*  fs.unlink(oldAvatarPath, (err) => { 
+             if (err) {
+                console.error(`Помилка видалення файлу: ${err}`);
+            } else {
+                console.log(`Файл ${filePath} успішно видалено`);
+      }
+    });*/
+      });
+
 }
