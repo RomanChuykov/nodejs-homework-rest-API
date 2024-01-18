@@ -45,7 +45,7 @@ const signup=async(req,res,next)=>{
         },
     })
 } 
-
+//***************************    login************************* */                  
 const signin=async(req,res,next)=>{
 
     const {email,password}=req.body;
@@ -61,7 +61,7 @@ const signin=async(req,res,next)=>{
     const payload={
         id
     }
-    console.log("payload",payload)
+    // console.log("payload",payload)
     const token=jwt.sign(payload, process.env.JWT_SECRET, {expiresIn:"24h"});
    
     const { _id,  createdAt, updatedAt, ...userDetails } = user._doc;
@@ -72,7 +72,7 @@ const signin=async(req,res,next)=>{
     user: userWithoutPassword,
 });   
 }
-
+// *********************   current  *******************************
 const getCurrent=async(req,res)=>{
   
     res.json({
@@ -87,36 +87,31 @@ const logout=async(req,res)=>{
     res.status(204).json()
 }
 
-
-
-
+// ********************   AVATARS  ***********************************
 const updateAvatar = async (req, res) => {
     if (!req.file) {
 		throw HttpError(400,"file not found");
 	}
     const { token } = req.user;
 	const oldAvatarPath =req.user.avatar;
-// console.log("req.file",req.file)
-	
-        const { path: oldPath, filename } = req.file;
-		const newPath = path.join(avatarPath, filename);
-console.log("oldpath",oldPath);
-console.log("newpath",newPath);
-        await fs.rename(oldPath, newPath);
-		const avatar = newPath//path.join("avatarPath", filename);
-//********************* */
-resolution(newPath)
-// **************************
-console.log("oldavatar",oldAvatarPath)
-fs.unlink(oldAvatarPath, (err) => { 
-    if (err) {
-       console.error(`Помилка видалення файлу: ${err}`);
-   } else {
-       console.log(`Файл ${filePath} успішно видалено`);
-}
-});
-// console.log("avatar",avatar);
+    const { path: oldPath, filename } = req.file;
+    const newPath = path.join(avatarPath, filename);
+    await fs.rename(oldPath, newPath);
+    const avatar = newPath//path.join("avatarPath", filename);
 
+    resolution(newPath)
+
+// console.log("oldavatar",oldAvatarPath)
+    const  firstFourChars = oldAvatarPath.slice(0, 4);
+    if (firstFourChars!=='http') {
+        fs.unlink(oldAvatarPath, (err) => { 
+            if (err) {
+            console.error(`Помилка видалення файлу: ${err}`);
+        } else {
+            console.log(`Файл ${filePath} успішно видалено`);
+        }
+    });
+}
 	const result = await User.findOneAndUpdate({ token }, { avatar }, { new: true });
  	if (!result) {
 		throw HttpError(404, "User not found");
@@ -124,7 +119,6 @@ fs.unlink(oldAvatarPath, (err) => {
 	if (req.user.avatar) {
 		const oldAvatarPath = path.join(path.resolve("public", req.user.avatar));
 	}
-
 	res.json({
 		avatar: result.avatar,
 	});
