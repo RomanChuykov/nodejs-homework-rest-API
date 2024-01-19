@@ -12,7 +12,7 @@ const avatarPath=path.resolve("public", "avatars");
 // const { JWT_SECRET } = process.env;. 
 // const JWT_SECRET1 = process.env.JWT_SECRET;
 // const JWT_SECRET1 = process.env.JWT_SECRET;
-
+ 
 
 
 const signup=async(req,res,next)=>{
@@ -32,7 +32,7 @@ const signup=async(req,res,next)=>{
 //  console.log("oldpath",oldPath)            
             await fs.rename(oldPath,newPath);
             resolution(newPath);
-             avatar=newPath//path.join("avatarPath",filename); 
+             avatar=path.join("avatars",filename); 
         }
 //  console.log(avatar)
     const newUser=await User.create({...req.body,avatar,password:hashPass});
@@ -93,16 +93,19 @@ const updateAvatar = async (req, res) => {
 		throw HttpError(400,"file not found");
 	}
     const { token } = req.user;
-	const oldAvatarPath =req.user.avatar;
+	// const oldAvatarPath =avatarPath+path.basename(req.user.avatar);
+    const oldFileName=path.basename(req.user.avatar)
+    const oldAvatarPath =path.join(avatarPath, oldFileName);
     const { path: oldPath, filename } = req.file;
     const newPath = path.join(avatarPath, filename);
     await fs.rename(oldPath, newPath);
-    const avatar = newPath//path.join("avatarPath", filename);
+    const avatar = path.join("avatars", filename);
 
     resolution(newPath)
 
 // console.log("oldavatar",oldAvatarPath)
-    const  firstFourChars = oldAvatarPath.slice(0, 4);
+// path.basename(filePath);
+const  firstFourChars = oldAvatarPath.slice(0, 4);
     if (firstFourChars!=='http') {
         fs.unlink(oldAvatarPath, (err) => { 
             if (err) {
@@ -110,8 +113,8 @@ const updateAvatar = async (req, res) => {
         } else {
             console.log(`Файл ${filePath} успішно видалено`);
         }
-    });
-}
+        });
+    }
 	const result = await User.findOneAndUpdate({ token }, { avatar }, { new: true });
  	if (!result) {
 		throw HttpError(404, "User not found");
