@@ -2,6 +2,7 @@ import{Schema,model} from "mongoose"
 import Joi from "joi";
 import { handleSaveError } from "../helpers/errors.js";
 
+
 const subscriptionlist=["starter", "pro", "business"]
 const UserSchema=new Schema({
     password: {
@@ -12,11 +13,14 @@ const UserSchema=new Schema({
         type: String,
         required: [true, 'Email is required'],
         unique: true,
-    },
+    }, 
     subscription: {
         type: String,
         enum: subscriptionlist,
         default: "starter"
+    },
+    avatar:{
+        type:String,
     },
     token: String,      
 },{versionKey:false,timestamps:true});
