@@ -80,16 +80,6 @@ export const resolution=(path)=>{
         image.write(path, (err) => {
             if (err) throw err;
         });
-        // console.log("oldavapath",oldAvatarPath);
-    
-    
-     /*  fs.unlink(oldAvatarPath, (err) => { 
-             if (err) {
-                console.error(`Помилка видалення файлу: ${err}`);
-            } else {
-                console.log(`Файл ${filePath} успішно видалено`);
-      }
-    });*/
       });
 
 }

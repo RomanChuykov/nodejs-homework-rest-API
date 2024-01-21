@@ -22,19 +22,30 @@ const UserSchema=new Schema({
     avatar:{
         type:String,
     },
-    token: String,      
-},{versionKey:false,timestamps:true});
+    token: String,
+    verify: {
+        type: Boolean,
+        default: false,
+      },
+      verificationToken: {
+        type: String,
+        required: [true, 'Verify token is required'],
+      },      
+},
+{versionKey:false,timestamps:true});
 UserSchema.post("save", handleSaveError)
 
 export const userSignupSchema= Joi.object({
    password: Joi.string().required(),
    email: Joi.string().required(),
    subscription:Joi.string().valid(...subscriptionlist), 
-});
+}); 
 export const userSigninSchema= Joi.object({
     password: Joi.string().required(),
     email: Joi.string().required(),
     subscription:Joi.string().valid(...subscriptionlist), 
  });
- 
+ export const userEmailSchema= Joi.object({
+    email: Joi.string().required(),
+ });
  export const User=model("user",UserSchema)

@@ -1,7 +1,7 @@
 import express from "express";
 import Joi from "joi";
 import { isEmptyBody ,autenticate} from "../../helpers/middlewares.js";
-import { userSignupSchema ,userSigninSchema} from "../../models/User.js";
+import { userSignupSchema ,userSigninSchema, userEmailSchema} from "../../models/User.js";
 import { validateBody } from "../../helpers/middlewares.js";
 import authController from "../../controllers/auth-controller.js";
 import  upload  from "../../helpers/upload.js";
@@ -15,7 +15,8 @@ authRouter.post("/login",isEmptyBody, validateBody(userSigninSchema),authControl
 authRouter.get("/current",autenticate,authController.getCurrent);
 authRouter.post("/logout",autenticate,authController.logout)
 authRouter.patch("/avatars",upload.single("avatar"),autenticate,authController.updateAvatar)
-
+authRouter.get("/verify/:verificationToken",authController.verify);
+authRouter.post("/verify",isEmptyBody, validateBody(userEmailSchema),authController.resentVerifyEmail);
 export default authRouter;
 /*\ 
 
